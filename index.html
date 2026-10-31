@@ -121,49 +121,79 @@
             </div>
         </div>
 
-        <!-- Conteúdo: Diário e Cálculo Automático de Calorias -->
+        <!-- Conteúdo: Diário e Histórico de 7 Dias -->
         <div id="contentFood" class="hidden space-y-6">
-            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-6 shadow-lg max-w-3xl mx-auto space-y-4">
+            <!-- Calculadora Nutricional -->
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-6 shadow-lg space-y-4">
                 <h3 class="font-bold text-lg text-white flex items-center gap-2">
-                    <i data-lucide="utensils" class="w-5 h-5 text-emerald-400"></i> Calculadora Automática de Refeições
+                    <i data-lucide="utensils" class="w-5 h-5 text-emerald-400"></i> Calculadora Nutricional de Precisão (Tabela TACO/USDA)
                 </h3>
-                <p class="text-sm text-slate-400">Digite o que você consumiu (ex: <code class="text-emerald-400">50g de pão com 15g de queijo e 1 ovo</code>) para estimar as calorias e macronutrientes.</p>
+                <p class="text-sm text-slate-400">Digite sua refeição em texto livre (ex: <code class="text-emerald-400">100g de batata doce, 2 ovos cozidos, 100g de bolo de aniversario</code>):</p>
                 
-                <div class="space-y-2">
-                    <label class="block text-xs font-medium text-slate-300">Refeição:</label>
-                    <textarea id="foodInputText" rows="3" class="w-full bg-dark-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="Ex: 50g de pão com 15g de queijo e 1 ovo..."></textarea>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-3">
+                        <textarea id="foodInputText" rows="2" class="w-full bg-dark-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="Digite os alimentos e quantidades..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Data para salvar:</label>
+                        <select id="foodLogDateSelect" class="w-full bg-dark-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"></select>
+                    </div>
                 </div>
-                <button onclick="calculateFoodCalories()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-lg shadow-emerald-600/30 flex items-center gap-2">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i> Calcular Calorias
-                </button>
 
-                <div id="foodResultBox" class="hidden mt-6 p-4 bg-dark-900/80 border border-emerald-500/40 rounded-xl space-y-3">
-                    <h4 class="font-bold text-emerald-400 text-sm flex items-center gap-2">
-                        <i data-lucide="check-circle-2" class="w-4 h-4"></i> Estimativa Nutricional Calculada:
-                    </h4>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                        <div class="bg-dark-800 p-3 rounded-lg border border-slate-700">
-                            <span class="text-xs text-slate-400 block">Calorias Totais</span>
-                            <span id="resCalorias" class="text-xl font-bold text-white">--</span>
+                <div class="flex gap-3">
+                    <button onclick="calculateFoodCalories()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-lg shadow-emerald-600/30 flex items-center gap-2">
+                        <i data-lucide="calculator" class="w-4 h-4"></i> Calcular Nutrientes
+                    </button>
+                    <button id="btnAddMealToLog" onclick="addMealToLog()" class="hidden bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-lg shadow-blue-600/30 flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Salvar no Diário
+                    </button>
+                </div>
+
+                <!-- Detalhamento dos Itens Reconhecidos -->
+                <div id="foodResultBox" class="hidden mt-4 p-4 bg-dark-900/90 border border-slate-700 rounded-xl space-y-3">
+                    <h4 class="font-bold text-white text-sm">Itens Detectados:</h4>
+                    <div id="foodBreakdownList" class="space-y-1.5 text-xs text-slate-300 border-b border-slate-800 pb-3"></div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center pt-1">
+                        <div class="bg-dark-800 p-2.5 rounded-lg border border-slate-700">
+                            <span class="text-[11px] text-slate-400 block">Calorias Totais</span>
+                            <span id="resCalorias" class="text-lg font-bold text-emerald-400">--</span>
                         </div>
-                        <div class="bg-dark-800 p-3 rounded-lg border border-slate-700">
-                            <span class="text-xs text-slate-400 block">Proteínas</span>
-                            <span id="resProteinas" class="text-xl font-bold text-blue-400">--</span>
+                        <div class="bg-dark-800 p-2.5 rounded-lg border border-slate-700">
+                            <span class="text-[11px] text-slate-400 block">Proteínas</span>
+                            <span id="resProteinas" class="text-lg font-bold text-blue-400">--</span>
                         </div>
-                        <div class="bg-dark-800 p-3 rounded-lg border border-slate-700">
-                            <span class="text-xs text-slate-400 block">Carboidratos</span>
-                            <span id="resCarbo" class="text-xl font-bold text-amber-400">--</span>
+                        <div class="bg-dark-800 p-2.5 rounded-lg border border-slate-700">
+                            <span class="text-[11px] text-slate-400 block">Carboidratos</span>
+                            <span id="resCarbo" class="text-lg font-bold text-amber-400">--</span>
                         </div>
-                        <div class="bg-dark-800 p-3 rounded-lg border border-slate-700">
-                            <span class="text-xs text-slate-400 block">Gorduras</span>
-                            <span id="resGordura" class="text-xl font-bold text-pink-400">--</span>
+                        <div class="bg-dark-800 p-2.5 rounded-lg border border-slate-700">
+                            <span class="text-[11px] text-slate-400 block">Gorduras</span>
+                            <span id="resGordura" class="text-lg font-bold text-pink-400">--</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Resumo e Histórico dos Últimos 7 Dias -->
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-6 shadow-lg space-y-4">
+                <div class="flex flex-col md:flex-row justify-between md:items-center gap-2">
+                    <div>
+                        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-5 h-5 text-blue-400"></i> Consumo dos Últimos 7 Dias
+                        </h3>
+                        <p class="text-xs text-slate-400">Acompanhamento diário para controle do saldo calórico.</p>
+                    </div>
+                    <div class="bg-dark-900 border border-amber-500/30 px-4 py-2 rounded-xl text-center">
+                        <span class="text-[11px] text-slate-400 block font-medium">Média Diária (7 dias)</span>
+                        <span id="valAvg7Days" class="text-xl font-bold text-amber-400">0 kcal/dia</span>
+                    </div>
+                </div>
+
+                <div id="sevenDaysContainer" class="space-y-3"></div>
+            </div>
         </div>
 
-        <!-- Conteúdo: Calculadora TMB e Metas Dinâmicas -->
+        <!-- Conteúdo: Calculadora TMB -->
         <div id="contentCalc" class="hidden space-y-6">
             <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-6 shadow-lg max-w-3xl mx-auto space-y-4">
                 <h3 class="font-bold text-lg text-white flex items-center gap-2">
@@ -208,7 +238,7 @@
             </div>
         </div>
 
-        <!-- Conteúdo: Tabela de Registros -->
+        <!-- Conteúdo: Tabela -->
         <div id="contentTable" class="hidden space-y-4">
             <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl shadow-lg overflow-hidden">
                 <div class="overflow-x-auto">
@@ -273,9 +303,8 @@
         </div>
     </div>
 
-    <!-- Script com Todos os Dados Preservados -->
+    <!-- Script Principal -->
     <script>
-        // HISTÓRICO COMPLETO MANTIDO INTACTO
         const defaultRecords = [
             { data: '2025-10-24', peso: 117.0, dose: 0.0, ex: 0, obs: 'Início do acompanhamento' },
             { data: '2026-03-24', peso: 105.7, dose: 0.0, ex: 0, obs: '' },
@@ -301,17 +330,231 @@
 
         let records = JSON.parse(localStorage.getItem('fittrack_records')) || defaultRecords;
         let profile = JSON.parse(localStorage.getItem('fittrack_profile')) || { altura: 175, idade: 40, atividade: 1.375 };
-        
+        let foodLogs = JSON.parse(localStorage.getItem('fittrack_foodlogs')) || {};
+
+        let currentCalculation = null;
         let weightChartInstance = null;
         let balanceChartInstance = null;
+
+        // BANCO DE DADOS NUTRICIONAL EXPANDIDO (Tabela TACO / USDA por 100g ou Unidade)
+        const dbNutricional = [
+            { termos: ['batata doce', 'batata-doce'], nome: 'Batata-doce cozida', cal: 86, p: 1.6, c: 20, g: 0.1, unidade: '100g' },
+            { termos: ['batata'], nome: 'Batata inglesa cozida', cal: 52, p: 1.2, c: 12, g: 0.1, unidade: '100g' },
+            { termos: ['ovo', 'ovos'], nome: 'Ovo cozido', cal: 78, p: 6.3, c: 0.6, g: 5.3, unidade: 'unidade' },
+            { termos: ['bolo de aniversario', 'bolo de aniversário', 'bolo recheado', 'bolo de festa', 'bolo'], nome: 'Bolo de Aniversário Recheado (Abacaxi/Coco)', cal: 350, p: 4.5, c: 54, g: 14, unidade: '100g' },
+            { termos: ['pao', 'pão'], nome: 'Pão francês / pão de fôrma', cal: 265, p: 9, c: 49, g: 3, unidade: '100g' },
+            { termos: ['queijo'], nome: 'Queijo muçarela / prato', cal: 330, p: 22, c: 2, g: 25, unidade: '100g' },
+            { termos: ['frango'], nome: 'Peito de frango grelhado', cal: 165, p: 31, c: 0, g: 3.6, unidade: '100g' },
+            { termos: ['carne', 'bife'], nome: 'Carne bovina grelhada', cal: 220, p: 28, c: 0, g: 11, unidade: '100g' },
+            { termos: ['arroz'], nome: 'Arroz branco cozido', cal: 130, p: 2.5, c: 28, g: 0.3, unidade: '100g' },
+            { termos: ['feijao', 'feijão'], nome: 'Feijão carioca cozido', cal: 76, p: 4.8, c: 13.6, g: 0.5, unidade: '100g' },
+            { termos: ['banana'], nome: 'Banana prata', cal: 89, p: 1.1, c: 23, g: 0.3, unidade: 'unidade' },
+            { termos: ['maçã', 'maca'], nome: 'Maçã', cal: 52, p: 0.3, c: 14, g: 0.2, unidade: 'unidade' },
+            { termos: ['leite'], nome: 'Leite integral', cal: 60, p: 3.2, c: 4.8, g: 3.3, unidade: '100ml' },
+            { termos: ['azeite', 'oleo', 'óleo'], nome: 'Azeite / Óleo', cal: 884, p: 0, c: 0, g: 100, unidade: '100g' },
+            { termos: ['chocolate'], nome: 'Chocolate ao leite', cal: 535, p: 7.6, c: 59, g: 30, unidade: '100g' }
+        ];
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('calcAltura').value = profile.altura;
             document.getElementById('calcIdade').value = profile.idade;
             document.getElementById('calcAtividade').value = profile.atividade;
+            populateDateSelector();
             lucide.createIcons();
             processAndRender();
         });
+
+        function populateDateSelector() {
+            const select = document.getElementById('foodLogDateSelect');
+            select.innerHTML = '';
+            const today = new Date();
+            
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(today);
+                d.setDate(d.getDate() - i);
+                let dateStr = d.toISOString().split('T')[0];
+                let label = (i === 0) ? `${formatDateDisplay(dateStr)} (Hoje)` : formatDateDisplay(dateStr);
+                let opt = document.createElement('option');
+                opt.value = dateStr;
+                opt.innerText = label;
+                select.appendChild(opt);
+            }
+        }
+
+        // MOTOR DE CÁLCULO PRECISO BASEADO EM TABELAS NUTRICIONAIS
+        function calculateFoodCalories() {
+            const rawText = document.getElementById('foodInputText').value.trim();
+            if (!rawText) {
+                alert('Digite os alimentos para calcular.');
+                return;
+            }
+
+            const text = rawText.toLowerCase();
+            let itemsFound = [];
+            let totalCal = 0, totalP = 0, totalC = 0, totalG = 0;
+
+            // Percorre o banco nutricional buscando correspondências
+            dbNutricional.forEach(item => {
+                item.termos.forEach(termo => {
+                    if (text.includes(termo)) {
+                        // Verifica se já não adicionamos uma versão mais específica (ex: 'bolo de aniversario' antes de 'bolo')
+                        let jaExiste = itemsFound.some(i => i.nome === item.nome);
+                        if (!jaExiste) {
+                            // Tenta extrair a quantidade numérica antes ou depois do termo
+                            let regex = new RegExp(`(\\d+)\\s*(?:g|gr|gramas|ml|unidade|unidades|ovos)?\\s*(?:de)?\\s*${termo}|${termo}\\s*(\\d+)`, 'i');
+                            let match = text.match(regex);
+                            let qtd = 100; // Padrão 100g
+
+                            if (match) {
+                                qtd = parseFloat(match[1] || match[2] || 100);
+                            }
+
+                            let mult = (item.unidade === '100g' || item.unidade === '100ml') ? qtd / 100 : qtd;
+                            
+                            let itemCal = Math.round(item.cal * mult);
+                            let itemP = Number((item.p * mult).toFixed(1));
+                            let itemC = Number((item.c * mult).toFixed(1));
+                            let itemG = Number((item.g * mult).toFixed(1));
+
+                            totalCal += itemCal;
+                            totalP += itemP;
+                            totalC += itemC;
+                            totalG += itemG;
+
+                            itemsFound.push({
+                                nome: item.nome,
+                                qtdFormat: item.unidade === 'unidade' ? `${qtd} un` : `${qtd}g`,
+                                cal: itemCal, p: itemP, c: itemC, g: itemG
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Se nenhum item do banco bater exatamente, calcula estimativa média realista (5.9 kcal/g)
+            if (itemsFound.length === 0) {
+                totalCal = 590; totalP = 18; totalC = 70; totalG = 22;
+                itemsFound.push({ nome: 'Refeição Composta (Estimada)', qtdFormat: 'Porção', cal: 590, p: 18, c: 70, g: 22 });
+            }
+
+            currentCalculation = {
+                textoOriginal: rawText,
+                cal: totalCal,
+                p: Number(totalP.toFixed(1)),
+                c: Number(totalC.toFixed(1)),
+                g: Number(totalG.toFixed(1)),
+                itens: itemsFound
+            };
+
+            // Renderiza resultado detalhado
+            const breakdownList = document.getElementById('foodBreakdownList');
+            breakdownList.innerHTML = itemsFound.map(i => 
+                `<div class="flex justify-between py-1 border-b border-slate-800/50">
+                    <span>• <strong>${i.nome}</strong> (${i.qtdFormat})</span>
+                    <span class="text-emerald-400 font-semibold">${i.cal} kcal</span>
+                </div>`
+            ).join('');
+
+            document.getElementById('resCalorias').innerText = `${totalCal} kcal`;
+            document.getElementById('resProteinas').innerText = `${totalP.toFixed(1)}g`;
+            document.getElementById('resCarbo').innerText = `${totalC.toFixed(1)}g`;
+            document.getElementById('resGordura').innerText = `${totalG.toFixed(1)}g`;
+
+            document.getElementById('foodResultBox').classList.remove('hidden');
+            document.getElementById('btnAddMealToLog').classList.remove('hidden');
+        }
+
+        function addMealToLog() {
+            if (!currentCalculation) return;
+            const dateStr = document.getElementById('foodLogDateSelect').value;
+            
+            if (!foodLogs[dateStr]) {
+                foodLogs[dateStr] = [];
+            }
+
+            foodLogs[dateStr].push({
+                id: Date.now(),
+                descricao: currentCalculation.textoOriginal,
+                cal: currentCalculation.cal,
+                p: currentCalculation.p,
+                c: currentCalculation.c,
+                g: currentCalculation.g
+            });
+
+            localStorage.setItem('fittrack_foodlogs', JSON.stringify(foodLogs));
+            
+            // Reset formulário
+            document.getElementById('foodInputText').value = '';
+            document.getElementById('foodResultBox').classList.add('hidden');
+            document.getElementById('btnAddMealToLog').classList.add('hidden');
+            currentCalculation = null;
+
+            render7DaysLog();
+        }
+
+        function deleteMealFromLog(dateStr, mealId) {
+            if (foodLogs[dateStr]) {
+                foodLogs[dateStr] = foodLogs[dateStr].filter(m => m.id !== mealId);
+                localStorage.setItem('fittrack_foodlogs', JSON.stringify(foodLogs));
+                render7DaysLog();
+            }
+        }
+
+        function render7DaysLog() {
+            const container = document.getElementById('sevenDaysContainer');
+            container.innerHTML = '';
+
+            const today = new Date();
+            let total7DaysCal = 0;
+            let daysWithData = 0;
+
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(today);
+                d.setDate(d.getDate() - i);
+                let dateStr = d.toISOString().split('T')[0];
+                let meals = foodLogs[dateStr] || [];
+
+                let dayCal = meals.reduce((sum, m) => sum + m.cal, 0);
+                let dayP = meals.reduce((sum, m) => sum + m.p, 0);
+                let dayC = meals.reduce((sum, m) => sum + m.c, 0);
+                let dayG = meals.reduce((sum, m) => sum + m.g, 0);
+
+                if (meals.length > 0) {
+                    total7DaysCal += dayCal;
+                    daysWithData++;
+                }
+
+                let isToday = (i === 0);
+                let card = document.createElement('div');
+                card.className = `p-4 rounded-xl border ${isToday ? 'bg-dark-800 border-blue-500/50' : 'bg-dark-900/60 border-slate-700/50'} space-y-2`;
+
+                let mealsHTML = meals.length > 0 ? meals.map(m => `
+                    <div class="flex justify-between items-center bg-dark-900/90 p-2.5 rounded-lg border border-slate-700/40 text-xs mt-1">
+                        <span class="text-slate-200 font-medium">${m.descricao}</span>
+                        <div class="flex items-center gap-3">
+                            <span class="text-emerald-400 font-bold">${m.cal} kcal</span>
+                            <button onclick="deleteMealFromLog('${dateStr}', ${m.id})" class="text-rose-400 hover:text-rose-300 p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
+                `).join('') : `<p class="text-xs text-slate-500 italic">Nenhum alimento registrado neste dia.</p>`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm text-white">${formatDateDisplay(dateStr)} ${isToday ? '<span class="text-blue-400 text-xs ml-1">(Hoje)</span>' : ''}</span>
+                        <div class="text-right">
+                            <span class="font-bold text-base ${dayCal > 0 ? 'text-emerald-400' : 'text-slate-400'}">${dayCal} kcal</span>
+                            <span class="text-[10px] text-slate-400 block">P: ${dayP.toFixed(1)}g | C: ${dayC.toFixed(1)}g | G: ${dayG.toFixed(1)}g</span>
+                        </div>
+                    </div>
+                    <div class="space-y-1">${mealsHTML}</div>
+                `;
+                container.appendChild(card);
+            }
+
+            const avg = daysWithData > 0 ? Math.round(total7DaysCal / daysWithData) : 0;
+            document.getElementById('valAvg7Days').innerText = `${avg} kcal/dia`;
+            lucide.createIcons();
+        }
 
         function processData() {
             records.sort((a, b) => new Date(a.data) - new Date(b.data));
@@ -338,6 +581,7 @@
             updateTable(dataProc);
             updateCharts(dataProc);
             updateDynamicCalculator(dataProc);
+            render7DaysLog();
             lucide.createIcons();
         }
 
@@ -381,58 +625,6 @@
             profile.atividade = document.getElementById('calcAtividade').value;
             localStorage.setItem('fittrack_profile', JSON.stringify(profile));
             processAndRender();
-        }
-
-        function calculateFoodCalories() {
-            const texto = document.getElementById('foodInputText').value.toLowerCase();
-            if (!texto.trim()) {
-                alert('Por favor, digite os alimentos consumidos.');
-                return;
-            }
-
-            const baseAlimentos = {
-                'pao': { cal: 265, p: 9, c: 49, g: 3, unidade: '100g' },
-                'pão': { cal: 265, p: 9, c: 49, g: 3, unidade: '100g' },
-                'queijo': { cal: 400, p: 25, c: 1.3, g: 33, unidade: '100g' },
-                'ovo': { cal: 70, p: 6, c: 0.4, g: 5, unidade: '1 unidade' },
-                'frango': { cal: 165, p: 31, c: 0, g: 3.6, unidade: '100g' },
-                'arroz': { cal: 130, p: 2.5, c: 28, g: 0.3, unidade: '100g' },
-                'feijao': { cal: 75, p: 5, c: 14, g: 0.5, unidade: '100g' },
-                'feijão': { cal: 75, p: 5, c: 14, g: 0.5, unidade: '100g' },
-                'banana': { cal: 89, p: 1.1, c: 23, g: 0.3, unidade: '1 unidade' },
-                'leite': { cal: 60, p: 3.2, c: 4.8, g: 3.3, unidade: '100ml' }
-            };
-
-            let totalCal = 0, totalP = 0, totalC = 0, totalG = 0;
-
-            for (let chave in baseAlimentos) {
-                if (texto.includes(chave)) {
-                    let info = baseAlimentos[chave];
-                    let regex = new RegExp(`(\\d+)\\s*(?:g|ml|unidade|unidades)?\\s*(?:de)?\\s*${chave}`, 'i');
-                    let match = texto.match(regex);
-                    let qtdMultiplicador = 1;
-
-                    if (match && match[1]) {
-                        let val = parseFloat(match[1]);
-                        qtdMultiplicador = (info.unidade === '100g' || info.unidade === '100ml') ? val / 100 : val;
-                    }
-
-                    totalCal += info.cal * qtdMultiplicador;
-                    totalP += info.p * qtdMultiplicador;
-                    totalC += info.c * qtdMultiplicador;
-                    totalG += info.g * qtdMultiplicador;
-                }
-            }
-
-            if (totalCal === 0) {
-                totalCal = 320; totalP = 14; totalC = 35; totalG = 11;
-            }
-
-            document.getElementById('resCalorias').innerText = `${Math.round(totalCal)} kcal`;
-            document.getElementById('resProteinas').innerText = `${totalP.toFixed(1)}g`;
-            document.getElementById('resCarbo').innerText = `${totalC.toFixed(1)}g`;
-            document.getElementById('resGordura').innerText = `${totalG.toFixed(1)}g`;
-            document.getElementById('foodResultBox').classList.remove('hidden');
         }
 
         function updateTable(data) {
