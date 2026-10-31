@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack Pro - Controle de Peso e Saúde</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            600: '#475569'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-900 text-slate-100 min-h-screen font-sans antialiased pb-12">
+    <!-- Header -->
+    <header class="bg-dark-800/80 backdrop-blur-md border-b border-slate-700/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3 w-full md:w-auto justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 p-2 rounded-xl text-white shadow-lg shadow-blue-500/30">
+                        <i data-lucide="activity" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight text-white">FitTrack <span class="text-blue-400">Pro</span></h1>
+                        <p class="text-xs text-slate-400">Controle de Peso e Saúde</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações do Topo (Responsivas e Ajustadas) -->
+            <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 justify-end">
+                <button onclick="exportCSV()" class="flex items-center gap-1.5 bg-dark-700 hover:bg-dark-600 text-slate-200 px-3 py-2 rounded-lg text-xs font-medium transition border border-slate-600 whitespace-nowrap">
+                    <i data-lucide="download" class="w-4 h-4 text-blue-400"></i> Exportar
+                </button>
+                <label class="flex items-center gap-1.5 bg-dark-700 hover:bg-dark-600 text-slate-200 px-3 py-2 rounded-lg text-xs font-medium transition border border-slate-600 cursor-pointer whitespace-nowrap">
+                    <i data-lucide="upload" class="w-4 h-4 text-emerald-400"></i> Importar
+                    <input type="file" id="importFile" accept=".csv,.json" class="hidden" onchange="importData(event)">
+                </label>
+                <button onclick="openModal()" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-lg text-xs font-semibold transition shadow-md shadow-blue-600/30 whitespace-nowrap">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Novo Registro
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        <!-- Cards de Resumo -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400">Peso Atual</p>
+                        <h3 id="cardPesoAtual" class="text-2xl font-bold text-white mt-1">--</h3>
+                    </div>
+                    <div class="p-2 bg-blue-500/10 rounded-xl text-blue-400">
+                        <i data-lucide="scale" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <p id="cardDataAtual" class="text-[11px] text-slate-400 mt-2">Atualizado recentemente</p>
+            </div>
+
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400">Perda Total</p>
+                        <h3 id="cardPerdaTotal" class="text-2xl font-bold text-emerald-400 mt-1">--</h3>
+                    </div>
+                    <div class="p-2 bg-emerald-500/10 rounded-xl text-emerald-400">
+                        <i data-lucide="trending-down" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <p id="cardInicioRef" class="text-[11px] text-slate-400 mt-2">Desde o início</p>
+            </div>
+
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400">Último Saldo</p>
+                        <h3 id="cardUltimoSaldo" class="text-2xl font-bold text-white mt-1">--</h3>
+                    </div>
+                    <div class="p-2 bg-purple-500/10 rounded-xl text-purple-400">
+                        <i data-lucide="activity" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-2">Variação na semana</p>
+            </div>
+
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400">Dose Atual TZ</p>
+                        <h3 id="cardDoseAtual" class="text-2xl font-bold text-pink-400 mt-1">--</h3>
+                    </div>
+                    <div class="p-2 bg-pink-500/10 rounded-xl text-pink-400">
+                        <i data-lucide="syringe" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-2">Tirzepatida (mg)</p>
+            </div>
+
+            <div class="col-span-2 md:col-span-1 bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400">Exercício Médio</p>
+                        <h3 id="cardExMedio" class="text-2xl font-bold text-amber-400 mt-1">--</h3>
+                    </div>
+                    <div class="p-2 bg-amber-500/10 rounded-xl text-amber-400">
+                        <i data-lucide="flame" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-2">Atividade física</p>
+            </div>
+        </div>
+
+        <!-- Abas de Navegação -->
+        <div class="flex border-b border-slate-700 gap-6">
+            <button onclick="switchTab('charts')" id="btnTabCharts" class="py-3 font-semibold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 transition">
+                <i data-lucide="line-chart" class="w-4 h-4"></i> Gráficos e Evolução
+            </button>
+            <button onclick="switchTab('table')" id="btnTabTable" class="py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition">
+                <i data-lucide="table" class="w-4 h-4"></i> Tabela de Registros
+            </button>
+        </div>
+
+        <!-- Conteúdo da Aba: Gráficos -->
+        <div id="contentCharts" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Gráfico de Peso vs Dose -->
+                <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-base text-white flex items-center gap-2">
+                            <i data-lucide="trending-down" class="w-5 h-5 text-blue-400"></i> Evolução de Peso vs. Dosagem de TZ
+                        </h3>
+                    </div>
+                    <div class="h-72 relative">
+                        <canvas id="weightChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Saldo e Acumulado -->
+                <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-base text-white flex items-center gap-2">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-purple-400"></i> Saldo Semanal e Evolução (TZ)
+                        </h3>
+                    </div>
+                    <div class="h-72 relative">
+                        <canvas id="balanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo da Aba: Tabela -->
+        <div id="contentTable" class="hidden space-y-4">
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl shadow-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-dark-700/50 text-xs uppercase text-slate-400 border-b border-slate-700">
+                            <tr>
+                                <th class="px-4 py-3">Data</th>
+                                <th class="px-4 py-3">Peso (kg)</th>
+                                <th class="px-4 py-3">Saldo</th>
+                                <th class="px-4 py-3">TZ (Acum.)</th>
+                                <th class="px-4 py-3">Dose (mg)</th>
+                                <th class="px-4 py-3">EX (min)</th>
+                                <th class="px-4 py-3">Obs / Notas</th>
+                                <th class="px-4 py-3 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-700/50">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Adicionar / Editar -->
+    <div id="recordModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-dark-800 border border-slate-700 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-slate-700">
+                <h3 id="modalTitle" class="font-bold text-lg text-white">Novo Registro de Saúde</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="recordForm" onsubmit="saveRecord(event)" class="p-6 space-y-4">
+                <input type="hidden" id="editIndex" value="-1">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Data</label>
+                        <input type="date" id="inputData" required class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Peso (kg)</label>
+                        <input type="number" step="0.1" id="inputPeso" required class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Ex: 98.5">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Dose Tirzepatida (mg)</label>
+                        <input type="number" step="0.1" id="inputDose" class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Ex: 2.5">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Exercício (minutos)</label>
+                        <input type="number" id="inputEx" class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Ex: 15">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Observações / Notas de Saúde</label>
+                    <textarea id="inputObs" rows="2" class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Ex: doente, infecção, antibiótico..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal()" class="bg-dark-700 hover:bg-dark-600 text-slate-300 px-4 py-2 rounded-xl text-sm font-medium transition">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-xl text-sm font-semibold transition shadow-lg shadow-blue-600/30">Salvar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script de lógica -->
+    <script>
+        // Dados Iniciais Baseados no Histórico Fornecido
+        let records = JSON.parse(localStorage.getItem('fittrack_records')) || [
+            { data: '2025-10-24', peso: 117.0, dose: 0.0, ex: 0, obs: 'Início do controle' },
+            { data: '2026-03-24', peso: 105.7, dose: 0.0, ex: 0, obs: '' },
+            { data: '2026-07-03', peso: 111.2, dose: 2.5, ex: 0, obs: '' },
+            { data: '2026-07-10', peso: 109.0, dose: 2.5, ex: 15, obs: '' },
+            { data: '2026-07-17', peso: 107.0, dose: 2.5, ex: 15, obs: '' },
+            { data: '2026-07-24', peso: 105.9, dose: 2.5, ex: 15, obs: '' },
+            { data: '2026-07-31', peso: 104.5, dose: 2.5, ex: 15, obs: '' },
+            { data: '2026-08-07', peso: 103.7, dose: 2.5, ex: 15, obs: '' },
+            { data: '2026-08-14', peso: 103.2, dose: 3.0, ex: 15, obs: '' },
+            { data: '2026-08-21', peso: 101.9, dose: 3.0, ex: 15, obs: '' },
+            { data: '2026-08-28', peso: 101.0, dose: 3.0, ex: 15, obs: '' },
+            { data: '2026-09-04', peso: 100.3, dose: 3.0, ex: 15, obs: '' },
+            { data: '2026-09-11', peso: 99.7, dose: 0.0, ex: 0, obs: 'doente, infecção, antibiótico' },
+            { data: '2026-09-18', peso: 99.8, dose: 2.5, ex: 0, obs: '' },
+            { data: '2026-09-25', peso: 99.8, dose: 2.5, ex: 0, obs: '' },
+            { data: '2026-10-02', peso: 99.2, dose: 2.5, ex: 0, obs: '' },
+            { data: '2026-10-08', peso: 98.6, dose: 2.5, ex: 0, obs: '' },
+            { data: '2026-10-15', peso: 98.4, dose: 2.5, ex: 0, obs: '' },
+            { data: '2026-10-23', peso: 98.5, dose: 5.0, ex: 0, obs: '' },
+            { data: '2026-10-30', peso: 97.7, dose: 2.5, ex: 0, obs: '' }
+        ];
+
+        let weightChartInstance = null;
+        let balanceChartInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            processAndRender();
+        });
+
+        function processData() {
+            // Ordenar por data
+            records.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+            let processed = [];
+            let pesoInicial = records.length > 0 ? records[0].peso : 0;
+            let saldoAcumulado = 0;
+            let tzAcumulado = 0;
+
+            for (let i = 0; i < records.length; i++) {
+                let curr = records[i];
+                let prev = i > 0 ? processed[i - 1] : null;
+
+                let saldo = prev ? Number((curr.peso - prev.peso).toFixed(2)) : 0;
+                saldoAcumulado = Number((curr.peso - pesoInicial).toFixed(2));
+                
+                // TZ acumulado equivalente às colunas da planilha
+                if (i === 0) {
+                    tzAcumulado = 0;
+                } else {
+                    tzAcumulado = Number((tzAcumulado + saldo).toFixed(1));
+                }
+
+                processed.push({
+                    ...curr,
+                    saldo: saldo,
+                    saldoAcumulado: saldoAcumulado,
+                    tz: tzAcumulado,
+                    indexOriginal: i
+                });
+            }
+            return processed;
+        }
+
+        function processAndRender() {
+            localStorage.setItem('fittrack_records', JSON.stringify(records));
+            const dataProc = processData();
+            updateCards(dataProc);
+            updateTable(dataProc);
+            updateCharts(dataProc);
+            lucide.createIcons();
+        }
+
+        function updateCards(data) {
+            if (data.length === 0) return;
+            const ultimo = data[data.length - 1];
+            const primeiro = data[0];
+
+            document.getElementById('cardPesoAtual').innerText = `${ultimo.peso.toFixed(1)} kg`;
+            document.getElementById('cardDataAtual').innerText = `Atualizado em ${formatDateDisplay(ultimo.data)}`;
+
+            const perdaTotal = Number((primeiro.peso - ultimo.peso).toFixed(1));
+            document.getElementById('cardPerdaTotal').innerText = `-${perdaTotal} kg`;
+            document.getElementById('cardInicioRef').innerText = `Desde ${primeiro.peso} kg (${formatDateDisplay(primeiro.data)})`;
+
+            document.getElementById('cardUltimoSaldo').innerText = `${ultimo.saldo >= 0 ? '+' : ''}${ultimo.saldo.toFixed(1)} kg`;
+            document.getElementById('cardDoseAtual').innerText = `${ultimo.dose.toFixed(1)} mg`;
+
+            const totalEx = data.reduce((acc, curr) => acc + (Number(curr.ex) || 0), 0);
+            const mediaEx = Math.round(totalEx / data.length);
+            document.getElementById('cardExMedio').innerText = `${mediaEx} min/sem`;
+        }
+
+        function updateTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            // Mostrar do mais recente para o mais antigo na tabela
+            const reversed = [...data].reverse();
+
+            reversed.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-dark-700/30 transition';
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-medium text-white">${formatDateDisplay(row.data)}</td>
+                    <td class="px-4 py-3">${row.peso.toFixed(1)}</td>
+                    <td class="px-4 py-3 font-semibold ${row.saldo <= 0 ? 'text-emerald-400' : 'text-rose-400'}">${row.saldo >= 0 ? '+' : ''}${row.saldo.toFixed(1)}</td>
+                    <td class="px-4 py-3 text-purple-400">${row.tz >= 0 ? '+' : ''}${row.tz.toFixed(1)}</td>
+                    <td class="px-4 py-3 text-pink-400 font-semibold">${row.dose.toFixed(1)} mg</td>
+                    <td class="px-4 py-3 text-amber-400">${row.ex || 0} min</td>
+                    <td class="px-4 py-3 text-slate-400 text-xs max-w-xs truncate">${row.obs || '-'}</td>
+                    <td class="px-4 py-3 text-right space-x-2">
+                        <button onclick="editRecord(${row.indexOriginal})" class="text-blue-400 hover:text-blue-300 p-1"><i data-lucide="edit-3" class="w-4 h-4 inline"></i></button>
+                        <button onclick="deleteRecord(${row.indexOriginal})" class="text-rose-400 hover:text-rose-300 p-1"><i data-lucide="trash-2" class="w-4 h-4 inline"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateCharts(data) {
+            const labels = data.map(d => formatDateDisplay(d.data));
+            const pesos = data.map(d => d.peso);
+            const doses = data.map(d => d.dose);
+            const saldos = data.map(d => d.saldo);
+
+            // Gráfico 1: Peso vs Dose
+            const ctx1 = document.getElementById('weightChart').getContext('2d');
+            if (weightChartInstance) weightChartInstance.destroy();
+
+            weightChartInstance = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Peso (kg)',
+                            data: pesos,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            yAxisID: 'y',
+                            fill: true
+                        },
+                        {
+                            label: 'Dose TZ (mg)',
+                            data: doses,
+                            borderColor: '#ec4899',
+                            backgroundColor: '#ec4899',
+                            borderWidth: 2,
+                            type: 'bar',
+                            yAxisID: 'y1',
+                            barThickness: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        y: { type: 'linear', display: true, position: 'left', grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8' } },
+                        y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#ec4899' }, min: 0, max: 10 }
+                    },
+                    plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } }
+                }
+            });
+
+            // Gráfico 2: Saldo Semanal
+            const ctx2 = document.getElementById('balanceChart').getContext('2d');
+            if (balanceChartInstance) balanceChartInstance.destroy();
+
+            balanceChartInstance = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Variação Semanal (kg)',
+                        data: saldos,
+                        backgroundColor: saldos.map(s => s <= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(244, 63, 94, 0.7)'),
+                        borderColor: saldos.map(s => s <= 0 ? '#10b981' : '#f43f5e'),
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        y: { grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } }
+                }
+            });
+        }
+
+        // Navegação de Abas
+        function switchTab(tab) {
+            const btnCharts = document.getElementById('btnTabCharts');
+            const btnTable = document.getElementById('btnTabTable');
+            const contentCharts = document.getElementById('contentCharts');
+            const contentTable = document.getElementById('contentTable');
+
+            if (tab === 'charts') {
+                btnCharts.className = "py-3 font-semibold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 transition";
+                btnTable.className = "py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition";
+                contentCharts.classList.remove('hidden');
+                contentTable.classList.add('hidden');
+            } else {
+                btnTable.className = "py-3 font-semibold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 transition";
+                btnCharts.className = "py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition";
+                contentTable.classList.remove('hidden');
+                contentCharts.classList.add('hidden');
+            }
+        }
+
+        // Modal Controls
+        function openModal() {
+            document.getElementById('modalTitle').innerText = "Novo Registro de Saúde";
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('recordForm').reset();
+            document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
+            document.getElementById('recordModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('recordModal').classList.add('hidden');
+        }
+
+        function editRecord(index) {
+            const rec = records[index];
+            document.getElementById('modalTitle').innerText = "Editar Registro";
+            document.getElementById('editIndex').value = index;
+            document.getElementById('inputData').value = rec.data;
+            document.getElementById('inputPeso').value = rec.peso;
+            document.getElementById('inputDose').value = rec.dose;
+            document.getElementById('inputEx').value = rec.ex;
+            document.getElementById('inputObs').value = rec.obs || '';
+            document.getElementById('recordModal').classList.remove('hidden');
+        }
+
+        function saveRecord(e) {
+            e.preventDefault();
+            const index = parseInt(document.getElementById('editIndex').value);
+            const newRec = {
+                data: document.getElementById('inputData').value,
+                peso: parseFloat(document.getElementById('inputPeso').value),
+                dose: parseFloat(document.getElementById('inputDose').value) || 0,
+                ex: parseInt(document.getElementById('inputEx').value) || 0,
+                obs: document.getElementById('inputObs').value
+            };
+
+            if (index === -1) {
+                records.push(newRec);
+            } else {
+                records[index] = newRec;
+            }
+
+            closeModal();
+            processAndRender();
+        }
+
+        function deleteRecord(index) {
+            if (confirm("Tem certeza que deseja apagar este registro?")) {
+                records.splice(index, 1);
+                processAndRender();
+            }
+        }
+
+        function formatDateDisplay(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        // Exportar e Importar CSV
+        function exportCSV() {
+            let csv = "Data,Peso,Dose,Exercicios,Observacoes\n";
+            records.forEach(r => {
+                csv += `${r.data},${r.peso},${r.dose},${r.ex},"${r.obs || ''}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fittrack_dados_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                try {
+                    if (file.name.endsWith('.json')) {
+                        records = JSON.parse(text);
+                    } else {
+                        // Parser básico de CSV
+                        const lines = text.split('\n');
+                        let newRecs = [];
+                        for (let i = 1; i < lines.length; i++) {
+                            const line = lines[i].trim();
+                            if (!line) continue;
+                            const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                            if (cols.length >= 2) {
+                                newRecs.push({
+                                    data: cols[0].trim(),
+                                    peso: parseFloat(cols[1]),
+                                    dose: parseFloat(cols[2]) || 0,
+                                    ex: parseInt(cols[3]) || 0,
+                                    obs: cols[4] ? cols[4].replace(/"/g, '').trim() : ''
+                                });
+                            }
+                        }
+                        if (newRecs.length > 0) {
+                            records = newRecs;
+                        }
+                    }
+                    processAndRender();
+                    alert('Dados importados com sucesso!');
+                } catch (err) {
+                    alert('Erro ao importar arquivo. Verifique o formato.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
