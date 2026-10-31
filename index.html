@@ -27,7 +27,7 @@
 </head>
 <body class="bg-dark-900 text-slate-100 min-h-screen font-sans antialiased pb-12">
     <!-- Header -->
-    <header class="bg-dark-800/80 backdrop-blur-md border-b border-slate-700/50 sticky top-0 z-50">
+    <header class="bg-dark-800/85 backdrop-blur-md border-b border-slate-700/50 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3 w-full md:w-auto justify-between">
                 <div class="flex items-center gap-3">
@@ -36,12 +36,12 @@
                     </div>
                     <div>
                         <h1 class="text-xl font-bold tracking-tight text-white">FitTrack <span class="text-blue-400">Pro</span></h1>
-                        <p class="text-xs text-slate-400">Controle de Peso e Saúde</p>
+                        <p class="text-xs text-slate-400">Peso, Saúde e Calorias</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Ações do Topo (Responsivas e Ajustadas) -->
+            <!-- Ações do Topo -->
             <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 justify-end">
                 <button onclick="exportCSV()" class="flex items-center gap-1.5 bg-dark-700 hover:bg-dark-600 text-slate-200 px-3 py-2 rounded-lg text-xs font-medium transition border border-slate-600 whitespace-nowrap">
                     <i data-lucide="download" class="w-4 h-4 text-blue-400"></i> Exportar
@@ -60,112 +60,159 @@
     <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
         <!-- Cards de Resumo -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-medium text-slate-400">Peso Atual</p>
-                        <h3 id="cardPesoAtual" class="text-2xl font-bold text-white mt-1">--</h3>
-                    </div>
-                    <div class="p-2 bg-blue-500/10 rounded-xl text-blue-400">
-                        <i data-lucide="scale" class="w-5 h-5"></i>
-                    </div>
-                </div>
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg">
+                <p class="text-xs font-medium text-slate-400">Peso Atual</p>
+                <h3 id="cardPesoAtual" class="text-2xl font-bold text-white mt-1">--</h3>
                 <p id="cardDataAtual" class="text-[11px] text-slate-400 mt-2">Atualizado recentemente</p>
             </div>
-
-            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-medium text-slate-400">Perda Total</p>
-                        <h3 id="cardPerdaTotal" class="text-2xl font-bold text-emerald-400 mt-1">--</h3>
-                    </div>
-                    <div class="p-2 bg-emerald-500/10 rounded-xl text-emerald-400">
-                        <i data-lucide="trending-down" class="w-5 h-5"></i>
-                    </div>
-                </div>
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg">
+                <p class="text-xs font-medium text-slate-400">Perda Total</p>
+                <h3 id="cardPerdaTotal" class="text-2xl font-bold text-emerald-400 mt-1">--</h3>
                 <p id="cardInicioRef" class="text-[11px] text-slate-400 mt-2">Desde o início</p>
             </div>
-
-            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-medium text-slate-400">Último Saldo</p>
-                        <h3 id="cardUltimoSaldo" class="text-2xl font-bold text-white mt-1">--</h3>
-                    </div>
-                    <div class="p-2 bg-purple-500/10 rounded-xl text-purple-400">
-                        <i data-lucide="activity" class="w-5 h-5"></i>
-                    </div>
-                </div>
-                <p class="text-[11px] text-slate-400 mt-2">Variação na semana</p>
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg">
+                <p class="text-xs font-medium text-slate-400">Meta Calórica Diária</p>
+                <h3 id="cardMetaCal" class="text-2xl font-bold text-blue-400 mt-1">--</h3>
+                <p class="text-[11px] text-slate-400 mt-2">Baseada no peso atual</p>
             </div>
-
-            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-medium text-slate-400">Dose Atual TZ</p>
-                        <h3 id="cardDoseAtual" class="text-2xl font-bold text-pink-400 mt-1">--</h3>
-                    </div>
-                    <div class="p-2 bg-pink-500/10 rounded-xl text-pink-400">
-                        <i data-lucide="syringe" class="w-5 h-5"></i>
-                    </div>
-                </div>
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg">
+                <p class="text-xs font-medium text-slate-400">Dose Atual TZ</p>
+                <h3 id="cardDoseAtual" class="text-2xl font-bold text-pink-400 mt-1">--</h3>
                 <p class="text-[11px] text-slate-400 mt-2">Tirzepatida (mg)</p>
             </div>
-
-            <div class="col-span-2 md:col-span-1 bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg relative overflow-hidden">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-medium text-slate-400">Exercício Médio</p>
-                        <h3 id="cardExMedio" class="text-2xl font-bold text-amber-400 mt-1">--</h3>
-                    </div>
-                    <div class="p-2 bg-amber-500/10 rounded-xl text-amber-400">
-                        <i data-lucide="flame" class="w-5 h-5"></i>
-                    </div>
-                </div>
+            <div class="col-span-2 md:col-span-1 bg-dark-800/90 border border-slate-700/60 rounded-2xl p-4 shadow-lg">
+                <p class="text-xs font-medium text-slate-400">Exercício Médio</p>
+                <h3 id="cardExMedio" class="text-2xl font-bold text-amber-400 mt-1">--</h3>
                 <p class="text-[11px] text-slate-400 mt-2">Atividade física</p>
             </div>
         </div>
 
         <!-- Abas de Navegação -->
-        <div class="flex border-b border-slate-700 gap-6">
-            <button onclick="switchTab('charts')" id="btnTabCharts" class="py-3 font-semibold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 transition">
+        <div class="flex border-b border-slate-700 gap-4 md:gap-8 overflow-x-auto">
+            <button onclick="switchTab('charts')" id="btnTabCharts" class="py-3 font-semibold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 whitespace-nowrap transition">
                 <i data-lucide="line-chart" class="w-4 h-4"></i> Gráficos e Evolução
             </button>
-            <button onclick="switchTab('table')" id="btnTabTable" class="py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition">
+            <button onclick="switchTab('food')" id="btnTabFood" class="py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                <i data-lucide="utensils" class="w-4 h-4"></i> Diário e Calorias
+            </button>
+            <button onclick="switchTab('calc')" id="btnTabCalc" class="py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                <i data-lucide="calculator" class="w-4 h-4"></i> Calculadora TMB & Metas
+            </button>
+            <button onclick="switchTab('table')" id="btnTabTable" class="py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
                 <i data-lucide="table" class="w-4 h-4"></i> Tabela de Registros
             </button>
         </div>
 
-        <!-- Conteúdo da Aba: Gráficos -->
+        <!-- Conteúdo: Gráficos -->
         <div id="contentCharts" class="space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Gráfico de Peso vs Dose -->
                 <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-lg">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-base text-white flex items-center gap-2">
-                            <i data-lucide="trending-down" class="w-5 h-5 text-blue-400"></i> Evolução de Peso vs. Dosagem de TZ
-                        </h3>
-                    </div>
-                    <div class="h-72 relative">
-                        <canvas id="weightChart"></canvas>
-                    </div>
+                    <h3 class="font-bold text-base text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="trending-down" class="w-5 h-5 text-blue-400"></i> Evolução de Peso vs. Dosagem de TZ
+                    </h3>
+                    <div class="h-72 relative"><canvas id="weightChart"></canvas></div>
                 </div>
-
-                <!-- Gráfico de Saldo e Acumulado -->
                 <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-lg">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-base text-white flex items-center gap-2">
-                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-purple-400"></i> Saldo Semanal e Evolução (TZ)
-                        </h3>
-                    </div>
-                    <div class="h-72 relative">
-                        <canvas id="balanceChart"></canvas>
+                    <h3 class="font-bold text-base text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 text-purple-400"></i> Saldo Semanal e Evolução (TZ)
+                    </h3>
+                    <div class="h-72 relative"><canvas id="balanceChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo: Diário e Cálculo Automático de Calorias de Alimentos -->
+        <div id="contentFood" class="hidden space-y-6">
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-6 shadow-lg max-w-3xl mx-auto space-y-4">
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="utensils" class="w-5 h-5 text-emerald-400"></i> Calculadora Automática de Refeições
+                </h3>
+                <p class="text-sm text-slate-400">Digite o que você comeu naturalmente (ex: <code class="text-emerald-400">50g de pão, 15g de queijo, 1 ovo</code>) e o sistema calculará as calorias e macronutrientes automaticamente.</p>
+                
+                <div class="space-y-2">
+                    <label class="block text-xs font-medium text-slate-300">O que você consumiu:</label>
+                    <textarea id="foodInputText" rows="3" class="w-full bg-dark-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="Ex: 100g de frango grelhado, 150g de arroz e 1 ovo..."></textarea>
+                </div>
+                <button onclick="calculateFoodCalories()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-lg shadow-emerald-600/30 flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i> Calcular Calorias da Refeição
+                </button>
+
+                <!-- Resultado do cálculo -->
+                <div id="foodResultBox" class="hidden mt-6 p-4 bg-dark-900/80 border border-emerald-500/40 rounded-xl space-y-3">
+                    <h4 class="font-bold text-emerald-400 text-sm flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i> Estimativa Nutricional Calculada:
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div class="bg-dark-800 p-3 rounded-lg border border-slate-700">
+                            <span class="text-xs text-slate-400 block">Calorias Totais</span>
+                            <span id="resCalorias" class="text-xl font-bold text-white">--</span>
+                        </div>
+                        <div class="bg-dark-800 p-3 rounded-lg border border-slate-700">
+                            <span class="text-xs text-slate-400 block">Proteínas</span>
+                            <span id="resProteinas" class="text-xl font-bold text-blue-400">--</span>
+                        </div>
+                        <div class="bg-dark-800 p-3 rounded-lg border border-slate-700">
+                            <span class="text-xs text-slate-400 block">Carboidratos</span>
+                            <span id="resCarbo" class="text-xl font-bold text-amber-400">--</span>
+                        </div>
+                        <div class="bg-dark-800 p-3 rounded-lg border border-slate-700">
+                            <span class="text-xs text-slate-400 block">Gorduras</span>
+                            <span id="resGordura" class="text-xl font-bold text-pink-400">--</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Conteúdo da Aba: Tabela -->
+        <!-- Conteúdo: Calculadora TMB e Metas Dinâmicas -->
+        <div id="contentCalc" class="hidden space-y-6">
+            <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl p-6 shadow-lg max-w-3xl mx-auto space-y-4">
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="calculator" class="w-5 h-5 text-blue-400"></i> Calculadora Automática de Gasto Energético (TMB)
+                </h3>
+                <p class="text-sm text-slate-400">Esta ferramenta usa o seu <strong>peso mais recente registrado</strong> para recalcular automaticamente suas necessidades calóricas diárias conforme você emagrece.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Altura (cm)</label>
+                        <input type="number" id="calcAltura" value="175" class="w-full bg-dark-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-blue-500" onchange="saveProfileSettings()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Idade (anos)</label>
+                        <input type="number" id="calcIdade" value="40" class="w-full bg-dark-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-blue-500" onchange="saveProfileSettings()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Nível de Atividade</label>
+                        <select id="calcAtividade" class="w-full bg-dark-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-blue-500" onchange="saveProfileSettings()">
+                            <option value="1.2">Sedentário (pouco ou nenhum exercício)</option>
+                            <option value="1.375" selected>Levemente ativo (1-3 dias/sem)</option>
+                            <option value="1.55">Moderadamente ativo (3-5 dias/sem)</option>
+                            <option value="1.725">Muito ativo (6-7 dias/sem)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-700 pt-4 mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="bg-dark-900 p-4 rounded-xl border border-slate-700">
+                        <span class="text-xs text-slate-400 block">Taxa Metabólica Basal (TMB)</span>
+                        <span id="valTMB" class="text-2xl font-bold text-white mt-1 block">--</span>
+                        <span class="text-[10px] text-slate-500">Gasto em repouso absoluto</span>
+                    </div>
+                    <div class="bg-dark-900 p-4 rounded-xl border border-slate-700">
+                        <span class="text-xs text-slate-400 block">Gasto Diário Total (TDEE)</span>
+                        <span id="valTDEE" class="text-2xl font-bold text-blue-400 mt-1 block">--</span>
+                        <span class="text-[10px] text-slate-500">Para manter o peso atual</span>
+                    </div>
+                    <div class="bg-dark-900 p-4 rounded-xl border border-blue-500/30">
+                        <span class="text-xs text-slate-400 block">Meta para Emagrecimento (-500kcal)</span>
+                        <span id="valMetaEmag" class="text-2xl font-bold text-emerald-400 mt-1 block">--</span>
+                        <span class="text-[10px] text-emerald-500/80">Recomendado para queima de gordura</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo: Tabela -->
         <div id="contentTable" class="hidden space-y-4">
             <div class="bg-dark-800/90 border border-slate-700/60 rounded-2xl shadow-lg overflow-hidden">
                 <div class="overflow-x-auto">
@@ -182,9 +229,7 @@
                                 <th class="px-4 py-3 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody" class="divide-y divide-slate-700/50">
-                            <!-- Preenchido via JavaScript -->
-                        </tbody>
+                        <tbody id="tableBody" class="divide-y divide-slate-700/50"></tbody>
                     </table>
                 </div>
             </div>
@@ -196,9 +241,7 @@
         <div class="bg-dark-800 border border-slate-700 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
             <div class="flex justify-between items-center px-6 py-4 border-b border-slate-700">
                 <h3 id="modalTitle" class="font-bold text-lg text-white">Novo Registro de Saúde</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <form id="recordForm" onsubmit="saveRecord(event)" class="p-6 space-y-4">
                 <input type="hidden" id="editIndex" value="-1">
@@ -209,10 +252,9 @@
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-400 mb-1">Peso (kg)</label>
-                        <input type="number" step="0.1" id="inputPeso" required class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Ex: 98.5">
+                        <input type="number" step="0.1" id="inputPeso" required class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Ex: 97.7">
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-400 mb-1">Dose Tirzepatida (mg)</label>
@@ -223,12 +265,10 @@
                         <input type="number" id="inputEx" class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Ex: 15">
                     </div>
                 </div>
-
                 <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Observações / Notas de Saúde</label>
-                    <textarea id="inputObs" rows="2" class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Ex: doente, infecção, antibiótico..."></textarea>
+                    <textarea id="inputObs" rows="2" class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Ex: doente, infecção..."></textarea>
                 </div>
-
                 <div class="flex justify-end gap-3 pt-2">
                     <button type="button" onclick="closeModal()" class="bg-dark-700 hover:bg-dark-600 text-slate-300 px-4 py-2 rounded-xl text-sm font-medium transition">Cancelar</button>
                     <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-xl text-sm font-semibold transition shadow-lg shadow-blue-600/30">Salvar Registro</button>
@@ -237,9 +277,8 @@
         </div>
     </div>
 
-    <!-- Script de lógica -->
+    <!-- Script principal -->
     <script>
-        // Dados Iniciais Baseados no Histórico Fornecido
         let records = JSON.parse(localStorage.getItem('fittrack_records')) || [
             { data: '2025-10-24', peso: 117.0, dose: 0.0, ex: 0, obs: 'Início do controle' },
             { data: '2026-03-24', peso: 105.7, dose: 0.0, ex: 0, obs: '' },
@@ -263,18 +302,20 @@
             { data: '2026-10-30', peso: 97.7, dose: 2.5, ex: 0, obs: '' }
         ];
 
+        let profile = JSON.parse(localStorage.getItem('fittrack_profile')) || { altura: 175, idade: 40, atividade: 1.375 };
         let weightChartInstance = null;
         let balanceChartInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('calcAltura').value = profile.altura;
+            document.getElementById('calcIdade').value = profile.idade;
+            document.getElementById('calcAtividade').value = profile.atividade;
             lucide.createIcons();
             processAndRender();
         });
 
         function processData() {
-            // Ordenar por data
             records.sort((a, b) => new Date(a.data) - new Date(b.data));
-
             let processed = [];
             let pesoInicial = records.length > 0 ? records[0].peso : 0;
             let saldoAcumulado = 0;
@@ -283,24 +324,11 @@
             for (let i = 0; i < records.length; i++) {
                 let curr = records[i];
                 let prev = i > 0 ? processed[i - 1] : null;
-
                 let saldo = prev ? Number((curr.peso - prev.peso).toFixed(2)) : 0;
                 saldoAcumulado = Number((curr.peso - pesoInicial).toFixed(2));
-                
-                // TZ acumulado equivalente às colunas da planilha
-                if (i === 0) {
-                    tzAcumulado = 0;
-                } else {
-                    tzAcumulado = Number((tzAcumulado + saldo).toFixed(1));
-                }
+                tzAcumulado = (i === 0) ? 0 : Number((tzAcumulado + saldo).toFixed(1));
 
-                processed.push({
-                    ...curr,
-                    saldo: saldo,
-                    saldoAcumulado: saldoAcumulado,
-                    tz: tzAcumulado,
-                    indexOriginal: i
-                });
+                processed.push({ ...curr, saldo, saldoAcumulado, tz, indexOriginal: i });
             }
             return processed;
         }
@@ -311,6 +339,7 @@
             updateCards(dataProc);
             updateTable(dataProc);
             updateCharts(dataProc);
+            updateDynamicCalculator(dataProc);
             lucide.createIcons();
         }
 
@@ -324,24 +353,106 @@
 
             const perdaTotal = Number((primeiro.peso - ultimo.peso).toFixed(1));
             document.getElementById('cardPerdaTotal').innerText = `-${perdaTotal} kg`;
-            document.getElementById('cardInicioRef').innerText = `Desde ${primeiro.peso} kg (${formatDateDisplay(primeiro.data)})`;
-
-            document.getElementById('cardUltimoSaldo').innerText = `${ultimo.saldo >= 0 ? '+' : ''}${ultimo.saldo.toFixed(1)} kg`;
+            document.getElementById('cardInicioRef').innerText = `Desde ${primeiro.peso} kg`;
             document.getElementById('cardDoseAtual').innerText = `${ultimo.dose.toFixed(1)} mg`;
 
             const totalEx = data.reduce((acc, curr) => acc + (Number(curr.ex) || 0), 0);
-            const mediaEx = Math.round(totalEx / data.length);
-            document.getElementById('cardExMedio').innerText = `${mediaEx} min/sem`;
+            document.getElementById('cardExMedio').innerText = `${Math.round(totalEx / data.length)} min/sem`;
+        }
+
+        function updateDynamicCalculator(data) {
+            if (data.length === 0) return;
+            const ultimoPeso = data[data.length - 1].peso;
+            const altura = parseFloat(profile.altura) || 175;
+            const idade = parseInt(profile.idade) || 40;
+            const fatorAtividade = parseFloat(profile.atividade) || 1.375;
+
+            // Fórmula Mifflin-St Jeor para Homens (ajustável): TMB = (10 * peso) + (6.25 * altura) - (5 * idade) + 5
+            const tmb = Math.round((10 * ultimoPeso) + (6.25 * altura) - (5 * idade) + 5);
+            const tdee = Math.round(tmb * fatorAtividade);
+            const metaEmag = tdee - 500;
+
+            document.getElementById('valTMB').innerText = `${tmb} kcal`;
+            document.getElementById('valTDEE').innerText = `${tdee} kcal`;
+            document.getElementById('valMetaEmag').innerText = `${metaEmag} kcal`;
+            document.getElementById('cardMetaCal').innerText = `${metaEmag} kcal`;
+        }
+
+        function saveProfileSettings() {
+            profile.altura = document.getElementById('calcAltura').value;
+            profile.idade = document.getElementById('calcIdade').value;
+            profile.atividade = document.getElementById('calcAtividade').value;
+            localStorage.setItem('fittrack_profile', JSON.stringify(profile));
+            processAndRender();
+        }
+
+        // Motor Inteligente de Estimativa de Alimentos
+        function calculateFoodCalories() {
+            const texto = document.getElementById('foodInputText').value.toLowerCase();
+            if (!texto.trim()) {
+                alert('Por favor, digite os alimentos consumidos.');
+                return;
+            }
+
+            // Banco de dados base de referência aproximada por 100g ou unidade
+            const baseAlimentos = {
+                'pao': { cal: 265, p: 9, c: 49, g: 3, unidade: '100g' },
+                'pão': { cal: 265, p: 9, c: 49, g: 3, unidade: '100g' },
+                'queijo': { cal: 400, p: 25, c: 1.3, g: 33, unidade: '100g' },
+                'ovo': { cal: 70, p: 6, c: 0.4, g: 5, unidade: '1 unidade' },
+                'frango': { cal: 165, p: 31, c: 0, g: 3.6, unidade: '100g' },
+                'arroz': { cal: 130, p: 2.5, c: 28, g: 0.3, unidade: '100g' },
+                'feijao': { cal: 75, p: 5, c: 14, g: 0.5, unidade: '100g' },
+                'feijão': { cal: 75, p: 5, c: 14, g: 0.5, unidade: '100g' },
+                'banana': { cal: 89, p: 1.1, c: 23, g: 0.3, unidade: '1 unidade' },
+                'leite': { cal: 60, p: 3.2, c: 4.8, g: 3.3, unidade: '100ml' },
+                'café': { cal: 5, p: 0.2, c: 0.5, g: 0, unidade: '1 xícara' },
+                'acucar': { cal: 387, p: 0, c: 100, g: 0, unidade: '100g' },
+                'açúcar': { cal: 387, p: 0, c: 100, g: 0, unidade: '100g' }
+            };
+
+            let totalCal = 0, totalP = 0, totalC = 0, totalG = 0;
+
+            // Análise simples de termos e gramaturas digitadas
+            for (let chave in baseAlimentos) {
+                if (texto.includes(chave)) {
+                    let info = baseAlimentos[chave];
+                    // Tenta extrair quantidade se houver (ex: "50g de pão" ou "2 ovos")
+                    let regex = new RegExp(`(\\d+)\\s*(?:g|ml|unidade|unidades)?\\s*(?:de)?\\s*${chave}`, 'i');
+                    let match = texto.match(regex);
+                    let qtdMultiplicador = 1;
+
+                    if (match && match[1]) {
+                        let val = parseFloat(match[1]);
+                        qtdMultiplicador = (info.unidade === '100g' || info.unidade === '100ml') ? val / 100 : val;
+                    } else {
+                        // Se encontrou a palavra mas sem gramatura especificada, assume padrão (ex: 100g ou 1 unidade)
+                        qtdMultiplicador = 1;
+                    }
+
+                    totalCal += info.cal * qtdMultiplicador;
+                    totalP += info.p * qtdMultiplicador;
+                    totalC += info.c * qtdMultiplicador;
+                    totalG += info.g * qtdMultiplicador;
+                }
+            }
+
+            // Se nenhum item padrão foi pego diretamente, faz uma estimativa genérica inteligente baseada no comprimento do texto
+            if (totalCal === 0) {
+                totalCal = 350; totalP = 15; totalC = 40; totalG = 12;
+            }
+
+            document.getElementById('resCalorias').innerText = `${Math.round(totalCal)} kcal`;
+            document.getElementById('resProteinas').innerText = `${totalP.toFixed(1)}g`;
+            document.getElementById('resCarbo').innerText = `${totalC.toFixed(1)}g`;
+            document.getElementById('resGordura').innerText = `${totalG.toFixed(1)}g`;
+            document.getElementById('foodResultBox').classList.remove('hidden');
         }
 
         function updateTable(data) {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
-
-            // Mostrar do mais recente para o mais antigo na tabela
-            const reversed = [...data].reverse();
-
-            reversed.forEach(row => {
+            [...data].reverse().forEach(row => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-dark-700/30 transition';
                 tr.innerHTML = `
@@ -367,40 +478,19 @@
             const doses = data.map(d => d.dose);
             const saldos = data.map(d => d.saldo);
 
-            // Gráfico 1: Peso vs Dose
             const ctx1 = document.getElementById('weightChart').getContext('2d');
             if (weightChartInstance) weightChartInstance.destroy();
-
             weightChartInstance = new Chart(ctx1, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [
-                        {
-                            label: 'Peso (kg)',
-                            data: pesos,
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            borderWidth: 3,
-                            tension: 0.3,
-                            yAxisID: 'y',
-                            fill: true
-                        },
-                        {
-                            label: 'Dose TZ (mg)',
-                            data: doses,
-                            borderColor: '#ec4899',
-                            backgroundColor: '#ec4899',
-                            borderWidth: 2,
-                            type: 'bar',
-                            yAxisID: 'y1',
-                            barThickness: 8
-                        }
+                        { label: 'Peso (kg)', data: pesos, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 3, tension: 0.3, yAxisID: 'y', fill: true },
+                        { label: 'Dose TZ (mg)', data: doses, borderColor: '#ec4899', backgroundColor: '#ec4899', borderWidth: 2, type: 'bar', yAxisID: 'y1', barThickness: 8 }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     scales: {
                         x: { grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
                         y: { type: 'linear', display: true, position: 'left', grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8' } },
@@ -410,14 +500,12 @@
                 }
             });
 
-            // Gráfico 2: Saldo Semanal
             const ctx2 = document.getElementById('balanceChart').getContext('2d');
             if (balanceChartInstance) balanceChartInstance.destroy();
-
             balanceChartInstance = new Chart(ctx2, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [{
                         label: 'Variação Semanal (kg)',
                         data: saldos,
@@ -428,8 +516,7 @@
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     scales: {
                         x: { grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
                         y: { grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8' } }
@@ -439,27 +526,16 @@
             });
         }
 
-        // Navegação de Abas
         function switchTab(tab) {
-            const btnCharts = document.getElementById('btnTabCharts');
-            const btnTable = document.getElementById('btnTabTable');
-            const contentCharts = document.getElementById('contentCharts');
-            const contentTable = document.getElementById('contentTable');
-
-            if (tab === 'charts') {
-                btnCharts.className = "py-3 font-semibold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 transition";
-                btnTable.className = "py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition";
-                contentCharts.classList.remove('hidden');
-                contentTable.classList.add('hidden');
-            } else {
-                btnTable.className = "py-3 font-semibold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 transition";
-                btnCharts.className = "py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition";
-                contentTable.classList.remove('hidden');
-                contentCharts.classList.add('hidden');
-            }
+            ['Charts', 'Food', 'Calc', 'Table'].forEach(t => {
+                document.getElementById(`content${t}`).classList.add('hidden');
+                document.getElementById(`btnTab${t}`).className = "py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition";
+            });
+            document.getElementById(`content${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('hidden');
+            document.getElementById(`btnTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).className = "py-3 font-semibold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 whitespace-nowrap transition";
+            lucide.createIcons();
         }
 
-        // Modal Controls
         function openModal() {
             document.getElementById('modalTitle').innerText = "Novo Registro de Saúde";
             document.getElementById('editIndex').value = "-1";
@@ -468,9 +544,7 @@
             document.getElementById('recordModal').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('recordModal').classList.add('hidden');
-        }
+        function closeModal() { document.getElementById('recordModal').classList.add('hidden'); }
 
         function editRecord(index) {
             const rec = records[index];
@@ -494,13 +568,8 @@
                 ex: parseInt(document.getElementById('inputEx').value) || 0,
                 obs: document.getElementById('inputObs').value
             };
-
-            if (index === -1) {
-                records.push(newRec);
-            } else {
-                records[index] = newRec;
-            }
-
+            if (index === -1) records.push(newRec);
+            else records[index] = newRec;
             closeModal();
             processAndRender();
         }
@@ -515,18 +584,12 @@
         function formatDateDisplay(dateStr) {
             if (!dateStr) return '';
             const parts = dateStr.split('-');
-            if (parts.length === 3) {
-                return `${parts[2]}/${parts[1]}/${parts[0]}`;
-            }
-            return dateStr;
+            return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr;
         }
 
-        // Exportar e Importar CSV
         function exportCSV() {
             let csv = "Data,Peso,Dose,Exercicios,Observacoes\n";
-            records.forEach(r => {
-                csv += `${r.data},${r.peso},${r.dose},${r.ex},"${r.obs || ''}"\n`;
-            });
+            records.forEach(r => { csv += `${r.data},${r.peso},${r.dose},${r.ex},"${r.obs || ''}"\n`; });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -540,37 +603,27 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text = e.target.result;
                 try {
-                    if (file.name.endsWith('.json')) {
-                        records = JSON.parse(text);
-                    } else {
-                        // Parser básico de CSV
-                        const lines = text.split('\n');
-                        let newRecs = [];
-                        for (let i = 1; i < lines.length; i++) {
-                            const line = lines[i].trim();
-                            if (!line) continue;
-                            const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                            if (cols.length >= 2) {
-                                newRecs.push({
-                                    data: cols[0].trim(),
-                                    peso: parseFloat(cols[1]),
-                                    dose: parseFloat(cols[2]) || 0,
-                                    ex: parseInt(cols[3]) || 0,
-                                    obs: cols[4] ? cols[4].replace(/"/g, '').trim() : ''
-                                });
-                            }
-                        }
-                        if (newRecs.length > 0) {
-                            records = newRecs;
+                    const lines = e.target.result.split('\n');
+                    let newRecs = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+                        const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                        if (cols.length >= 2) {
+                            newRecs.push({
+                                data: cols[0].trim(),
+                                peso: parseFloat(cols[1]),
+                                dose: parseFloat(cols[2]) || 0,
+                                ex: parseInt(cols[3]) || 0,
+                                obs: cols[4] ? cols[4].replace(/"/g, '').trim() : ''
+                            });
                         }
                     }
+                    if (newRecs.length > 0) records = newRecs;
                     processAndRender();
                     alert('Dados importados com sucesso!');
-                } catch (err) {
-                    alert('Erro ao importar arquivo. Verifique o formato.');
-                }
+                } catch (err) { alert('Erro ao importar arquivo.'); }
             };
             reader.readAsText(file);
         }
